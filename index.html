@@ -2,98 +2,180 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>Cycrozen Blog</title>
+  <title>MINANO</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; background: #121212; color: #f0f0f0; }
-    header { background: #1f1f1f; padding: 20px; text-align: center; }
-    header h1 { margin: 0; font-size: 1.8em; }
-    #password-form, #content { max-width: 800px; margin: 50px auto; padding: 20px; background: #1e1e1e; border-radius: 10px; }
-    input { padding: 8px; margin-right: 10px; }
-    button { padding: 8px 14px; background: #3f51b5; border: none; border-radius: 5px; color: white; cursor: pointer; }
-    button:hover { background: #5c6bc0; }
-    section { margin-bottom: 40px; }
-    section h2 { border-bottom: 2px solid #3f51b5; padding-bottom: 5px; }
-    .hidden { display: none; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #121212;
+      color: #f0f0f0;
+    }
+
+    header {
+      background: #1f1f1f;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.8em;
+    }
+
+    #password-form,
+    #content {
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #1e1e1e;
+      border-radius: 10px;
+    }
+
+    input {
+      padding: 8px;
+      margin-right: 10px;
+    }
+
+    button {
+      padding: 8px 14px;
+      background: #3f51b5;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #5c6bc0;
+    }
+
+    section {
+      margin-bottom: 40px;
+    }
+
+    section h2 {
+      border-bottom: 2px solid #3f51b5;
+      padding-bottom: 5px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .tab-section {
+      margin-top: 30px;
+    }
+
+    canvas {
+      margin-top: 20px;
+    }
   </style>
+
+  <!-- Chart.js 라이브러리 불러오기 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
 <header>
-  <h1> MINANO </h1></h1>
+  <h1>MINANO</h1>
 </header>
 
-<!-- 비번 입력 폼 -->
+<!-- 비밀번호 입력 폼 -->
 <div id="password-form">
   <p>🔒 비밀번호를 입력하세요</p>
   <input type="password" id="pw" placeholder="Password">
   <button onclick="checkPw()">Enter</button>
 </div>
 
-<!-- 블로그 콘텐츠 -->
+<!-- 콘텐츠 시작 -->
 <div id="content" class="hidden">
-  <section>
-    <h2>스타크래프트</h2>
-    <p>유닛 컨트롤이 승패를 좌우한다. 멀티 태스킹이 핵심.</p>
-  </section>
 
-  <section>
-    <h2>리그 오브 레전드</h2>
-    <p>라인전에서 초반 압박이 중요하다. 팀워크와 시야 장악 필수.</p>
-  </section>
+  <!-- 탭 버튼 -->
+  <div style="text-align: center; margin-bottom: 20px;">
+    <button onclick="showTab('overview')">📊 자산 현황</button>
+    <button onclick="showTab('positions')">📈 마진 포지션</button>
+    <button onclick="showTab('logs')">📋 로그 기록</button>
+  </div>
 
-  <section>
-    <h2>메이플랜드</h2>
-    <p>메이플 육성 재미
-1차에서 4차까지 전직한다는 재미에서 주는 성취감과 기대감
-자연의 섭리처럼 작고 약한 단계서 완전 성숙단계에 이르기까지
-재미욕구를 충족 시켜줌.
+  <!-- 탭 1: 자산 현황 -->
+  <div id="tab-overview" class="tab-section">
+    <h2>총 자산 현황</h2>
+    <p>총재산: $25,000</p>
+    <ul>
+      <li>예치: $10,000</li>
+      <li>마진: $8,000</li>
+      <li>현물: $5,000</li>
+      <li>예금: $2,000</li>
+    </ul>
+    <!-- 도넛 차트 자리 -->
+    <canvas id="assetChart" width="300" height="300"></canvas>
+  </div>
 
-메이플 디자인
-아기자기한 2D의 효과는 대단함.
-시간이 지나도 때타지 않음 (올드함이 안느껴짐)
+  <!-- 탭 2: 마진 포지션 -->
+  <div id="tab-positions" class="tab-section hidden">
+    <h2>마진 포지션 현황</h2>
+    <p>여기에 포지션 테이블 들어감</p>
+  </div>
 
-타격감
-메이플은 몬스터들을 타격하는 타격감이 강한 중독성을 자극함.
+  <!-- 탭 3: 로그 기록 -->
+  <div id="tab-logs" class="tab-section hidden">
+    <h2>로그 기록</h2>
+    <p>여기에 입출금, 포지션 종료 기록 들어감</p>
+  </div>
 
-커스터마이징 시스템
-캐릭/펫등 자신이 원하는 디자인으로 꾸밀수있음.
-나아가, 자신이 직접 캐릭터 디자인을 디자인하여 다른유저에게
-판매하거나 사용할수있음.
-이부분에서 메이플랜드는 많은 수익을 걷는다고 생각함.
-
-
-직업이 처음엔 10가지 / 종족은 4가지
-추후 2가지 추가 / 종족 5가지
-이다가 점점 늘어남
-
-개인보단 협업을해야 성장속도가 빠른 시스템. 이것은 재미이자 장점
-</p>
-  </section>
-
-   <section>
-    <h2>리그 오브 레전드</h2>
-    <p>라인전에서 초반 압박이 중요하다. 팀워크와 시야 장악 필수.</p>
-  </section>
-
-  <!-- 👉 새로운 글 추가 예시 -->
-  <!--
-  <section>
-    <h2>게임 제목</h2>
-    <p>여기에 감상/특징 작성</p>
-  </section>
-  -->
 </div>
 
 <script>
   function checkPw() {
     const input = document.getElementById("pw").value;
-    const correct = "44554455"; // 👉 원하는 비밀번호로 바꾸세요
+    const correct = "44554455"; // 비밀번호
     if (input === correct) {
       document.getElementById("password-form").classList.add("hidden");
       document.getElementById("content").classList.remove("hidden");
+      showTab('overview'); // 기본 탭
+      drawAssetChart();     // 차트 그리기
     } else {
       alert("비밀번호가 틀렸습니다!");
     }
+  }
+
+  function showTab(tabName) {
+    const tabs = ['overview', 'positions', 'logs'];
+    tabs.forEach(tab => {
+      const section = document.getElementById('tab-' + tab);
+      if (tab === tabName) {
+        section.classList.remove('hidden');
+      } else {
+        section.classList.add('hidden');
+      }
+    });
+  }
+
+  // 도넛 차트 그리기
+  function drawAssetChart() {
+    const ctx = document.getElementById('assetChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['예치', '마진', '현물', '예금'],
+        datasets: [{
+          label: '자산 구성',
+          data: [10000, 8000, 5000, 2000],
+          backgroundColor: ['#42a5f5', '#66bb6a', '#ffa726', '#ab47bc'],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              color: '#f0f0f0'
+            }
+          }
+        }
+      }
+    });
   }
 </script>
 

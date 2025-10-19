@@ -10,18 +10,15 @@
       background: #121212;
       color: #f0f0f0;
     }
-
     header {
       background: #1f1f1f;
       padding: 20px;
       text-align: center;
     }
-
     header h1 {
       margin: 0;
       font-size: 1.8em;
     }
-
     #password-form,
     #content {
       max-width: 800px;
@@ -30,12 +27,10 @@
       background: #1e1e1e;
       border-radius: 10px;
     }
-
     input {
       padding: 8px;
       margin-right: 10px;
     }
-
     button {
       padding: 8px 14px;
       background: #3f51b5;
@@ -44,30 +39,44 @@
       color: white;
       cursor: pointer;
     }
-
     button:hover {
       background: #5c6bc0;
     }
-
     section {
       margin-bottom: 40px;
     }
-
     section h2 {
       border-bottom: 2px solid #3f51b5;
       padding-bottom: 5px;
     }
-
     .hidden {
       display: none;
     }
-
     .tab-section {
       margin-top: 30px;
     }
-
     canvas {
       margin-top: 20px;
+      width: 100% !important;
+      height: auto !important;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table, th, td {
+      border: 1px solid #444;
+    }
+    th, td {
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background: #2a2a2a;
+    }
+    td {
+      background: #1f1f1f;
     }
   </style>
 
@@ -87,7 +96,7 @@
   <button onclick="checkPw()">Enter</button>
 </div>
 
-<!-- 콘텐츠 시작 -->
+<!-- 콘텐츠 영역 -->
 <div id="content" class="hidden">
 
   <!-- 탭 버튼 -->
@@ -107,20 +116,80 @@
       <li>현물: $5,000</li>
       <li>예금: $2,000</li>
     </ul>
-    <!-- 도넛 차트 자리 -->
-    <canvas id="assetChart" width="300" height="300"></canvas>
+    <!-- 도넛 차트 -->
+    <canvas id="assetChart"></canvas>
+    <h3 style="margin-top:40px;">자산 변화 추이</h3>
+    <!-- 라인 차트 -->
+    <canvas id="assetLineChart"></canvas>
   </div>
 
   <!-- 탭 2: 마진 포지션 -->
   <div id="tab-positions" class="tab-section hidden">
     <h2>마진 포지션 현황</h2>
-    <p>여기에 포지션 테이블 들어감</p>
+    <table>
+      <thead>
+        <tr>
+          <th>코인</th>
+          <th>방향</th>
+          <th>레버리지</th>
+          <th>진입금액</th>
+          <th>미실현 손익(%)</th>
+          <th>미실현 손익($)</th>
+          <th>청산가</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>BTC</td>
+          <td>숏</td>
+          <td>x3</td>
+          <td>$5,000</td>
+          <td>-2.3%</td>
+          <td>-$115</td>
+          <td>$32,500</td>
+        </tr>
+        <tr>
+          <td>ETH</td>
+          <td>롱</td>
+          <td>x2</td>
+          <td>$3,000</td>
+          <td>+4.5%</td>
+          <td>$135</td>
+          <td>$2,800</td>
+        </tr>
+        <!-- 추가 포지션 행은 여기에 계속 넣으세요 -->
+      </tbody>
+    </table>
   </div>
 
   <!-- 탭 3: 로그 기록 -->
   <div id="tab-logs" class="tab-section hidden">
     <h2>로그 기록</h2>
-    <p>여기에 입출금, 포지션 종료 기록 들어감</p>
+    <table>
+      <thead>
+        <tr>
+          <th>날짜</th>
+          <th>종류</th>
+          <th>내용</th>
+          <th>금액</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2025‑10‑20</td>
+          <td>입금</td>
+          <td>현물 계좌 입금</td>
+          <td>$2,000</td>
+        </tr>
+        <tr>
+          <td>2025‑10‑19</td>
+          <td>포지션 종료</td>
+          <td>ETH 롱 청산</td>
+          <td>$135</td>
+        </tr>
+        <!-- 추가 로그는 여기에 계속 넣으세요 -->
+      </tbody>
+    </table>
   </div>
 
 </div>
@@ -132,8 +201,9 @@
     if (input === correct) {
       document.getElementById("password-form").classList.add("hidden");
       document.getElementById("content").classList.remove("hidden");
-      showTab('overview'); // 기본 탭
-      drawAssetChart();     // 차트 그리기
+      showTab('overview');        // 기본 탭 띄우기
+      drawAssetChart();           // 도넛 차트
+      drawAssetLineChart();       // 라인 차트
     } else {
       alert("비밀번호가 틀렸습니다!");
     }
@@ -151,7 +221,6 @@
     });
   }
 
-  // 도넛 차트 그리기
   function drawAssetChart() {
     const ctx = document.getElementById('assetChart').getContext('2d');
     new Chart(ctx, {
@@ -172,6 +241,39 @@
             labels: {
               color: '#f0f0f0'
             }
+          }
+        }
+      }
+    });
+  }
+
+  function drawAssetLineChart() {
+    const ctx = document.getElementById('assetLineChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['10/14', '10/15', '10/16', '10/17', '10/18', '10/19', '10/20'],
+        datasets: [{
+          label: '총 자산 ($)',
+          data: [22000, 23000, 24000, 25000, 25500, 26000, 25000],
+          fill: true,
+          borderColor: '#42a5f5',
+          backgroundColor: 'rgba(66, 165, 245, 0.2)',
+          tension: 0.3
+        }]
+      },
+      options: {
+        scales: {
+          x: {
+            ticks: { color: '#f0f0f0' }
+          },
+          y: {
+            ticks: { color: '#f0f0f0' }
+          }
+        },
+        plugins: {
+          legend: {
+            labels: { color: '#f0f0f0' }
           }
         }
       }
